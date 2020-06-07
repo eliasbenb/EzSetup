@@ -1,23 +1,30 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-import imagebytes, mglobals, os, re, requests, wgetter
 from bs4 import BeautifulSoup
+import os, re, requests, wgetter
 
-if not os.path.exists(mglobals.base_path):
-    os.makedirs(mglobals.base_path)
-if not os.path.exists(mglobals.save_path):
-    os.makedirs(mglobals.save_path)
-if not os.path.exists(mglobals.images_path):
-    os.makedirs(mglobals.images_path)
-if not os.path.exists(mglobals.app_list_path):
-    with open(mglobals.app_list_path, 'w') as w:
+import src.paths, src.imagebytes
+
+if not os.path.exists(src.paths.base_path):
+    os.makedirs(src.paths.base_path)
+if not os.path.exists(src.paths.images_path):
+    os.makedirs(src.paths.images_path)
+if not os.path.exists(src.paths.export_path):
+    os.makedirs(src.paths.export_path)
+if not os.path.exists(src.paths.files_path):
+    os.makedirs(src.paths.files_path)
+if not os.path.exists(src.paths.app_list_path):
+    with open(src.paths.app_list_path, 'w') as w:
         w.write('')
-if not os.path.exists(mglobals.icon_path):
-    with open(mglobals.icon_path, 'wb') as wb:
-        wb.write(imagebytes.icon_bytes)
+if not os.path.exists(src.paths.icon_path):
+    with open(src.paths.icon_path, 'wb') as wb:
+        wb.write(src.imagebytes.icon_bytes)
 
 class Ui_homeMainWindow(object):
     def setup_callback(self):
-        with open(mglobals.app_list_path, 'r') as r:
+        if not os.path.exists(src.paths.save_path):
+            os.makedirs(src.paths.save_path)
+
+        with open(src.paths.app_list_path, 'r') as r:
             app_list = r.readlines()
         app_list = [x.strip() for x in app_list] 
 
@@ -29,7 +36,7 @@ class Ui_homeMainWindow(object):
             app_name = soup.find('h1', class_='name').text
             download_link_soup = soup.find('a', class_="data download")
             download_link = download_link_soup.get('href')
-            filename = wgetter.download(download_link, outdir=mglobals.save_path)
+            filename = wgetter.download(download_link, outdir=src.paths.save_path)
             os.rename(filename,r'EzSetup Downloads\\'+app_name+'.exe')
 
     def setupUi(self, homeMainWindow):
@@ -40,7 +47,7 @@ class Ui_homeMainWindow(object):
         font.setPointSize(11)
         homeMainWindow.setFont(font)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(mglobals.icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(src.paths.icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         homeMainWindow.setWindowIcon(icon)
         self.centralWidget = QtWidgets.QWidget(homeMainWindow)
         self.centralWidget.setObjectName("centralWidget")

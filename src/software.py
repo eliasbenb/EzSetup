@@ -1,6 +1,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from bs4 import BeautifulSoup
-import imagebytes, mglobals, os, requests, re, time, wgetter
+import os, re, requests, time, wgetter
+
+import src.paths, src.imagebytes
 
 class Ui_softwareMainWindow(object):
     def callback(self):
@@ -12,7 +14,7 @@ class Ui_softwareMainWindow(object):
             successMessageBox.setWindowTitle("Task Completed!")
             successMessageBox.setStandardButtons(QtWidgets.QMessageBox.Ok)
             icon = QtGui.QIcon()
-            icon.addPixmap(QtGui.QPixmap(mglobals.icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(src.paths.icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             successMessageBox.setWindowIcon(icon)
                 
             successMessageBox.exec_()
@@ -25,7 +27,7 @@ class Ui_softwareMainWindow(object):
             errorMessageBox.setWindowTitle("Error!")
             errorMessageBox.setStandardButtons(QtWidgets.QMessageBox.Ok)
             icon = QtGui.QIcon()
-            icon.addPixmap(QtGui.QPixmap(mglobals.icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(src.paths.icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             errorMessageBox.setWindowIcon(icon)
                 
             errorMessageBox.exec_()
@@ -37,7 +39,7 @@ class Ui_softwareMainWindow(object):
             soup = BeautifulSoup(source, 'lxml')
             app_link = soup.find('a', attrs={'title': re.compile("^download")})
             app_link = app_link.get('href')
-            with open(mglobals.app_list_path, 'a+') as w:
+            with open(src.paths.app_list_path, 'a+') as w:
                 w.write(str(app_link))
                 w.write('\n')
             item = QtGui.QStandardItem(app_link)
@@ -53,7 +55,7 @@ class Ui_softwareMainWindow(object):
         font.setPointSize(9)
         softwareMainWindow.setFont(font)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(mglobals.icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(src.paths.icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         softwareMainWindow.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(softwareMainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -75,7 +77,7 @@ class Ui_softwareMainWindow(object):
         self.retranslateUi(softwareMainWindow)
         QtCore.QMetaObject.connectSlotsByName(softwareMainWindow)
 
-        with open(mglobals.app_list_path, 'r') as r:
+        with open(src.paths.app_list_path, 'r') as r:
             for line in r.readlines():
                 item = QtGui.QStandardItem(line)
                 self.model.appendRow(item)

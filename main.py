@@ -1,10 +1,12 @@
 from PyQt5.QtWidgets import QMainWindow, QApplication
-import sys
+from zipfile import ZipFile
+import os, shutil, sys
 
-from home import Ui_homeMainWindow
-from software import Ui_softwareMainWindow
-from files import Ui_filesMainWindow
-from background import Ui_backgroundMainWindow
+from src.home import Ui_homeMainWindow
+from src.software import Ui_softwareMainWindow
+from src.files import Ui_filesMainWindow
+from src.background import Ui_backgroundMainWindow
+import src.paths, src.imagebytes
 
 class HomeWindow(QMainWindow):
     def __init__(self):
@@ -24,11 +26,12 @@ class HomeWindow(QMainWindow):
         #import action
         x = x
     def export_button(self):
-        #export action
-        x = x
-    def setup(self):
-        #setup action
-        x = x
+        from os.path import basename
+        with ZipFile(src.paths.current_time+'.ez', 'w') as zipObj:
+            for folderName, subfolders, filenames in os.walk(src.paths.export_path):
+                for filename in filenames:
+                    filePath = os.path.join(folderName, filename)
+                    zipObj.write(filePath, basename(filePath))
 
 class softwareWindow(QMainWindow):
     def __init__(self):
@@ -46,8 +49,12 @@ class backgroundWindow(QMainWindow):
         self.ui = Ui_backgroundMainWindow()
         self.ui.setupUi(self)
 
+def app_exit():
+    shutil.rmtree(src.paths.export_path, ignore_errors=True)
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    app.aboutToQuit.connect(app_exit)
     w = HomeWindow()
     w.show()
     sys.exit(app.exec_())

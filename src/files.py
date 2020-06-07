@@ -1,5 +1,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-import imagebytes, mglobals, os
+from distutils.dir_util import copy_tree
+import os
+
+import src.paths, src.imagebytes, src.qtObjects
 
 class Ui_filesMainWindow(object):
     def setupUi(self, filesMainWindow):
@@ -10,7 +13,7 @@ class Ui_filesMainWindow(object):
         font.setPointSize(9)
         filesMainWindow.setFont(font)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(mglobals.icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(src.paths.icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         filesMainWindow.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(filesMainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -24,6 +27,8 @@ class Ui_filesMainWindow(object):
         self.explorerToolButton.setGeometry(QtCore.QRect(460, 39, 71, 22))
         self.explorerToolButton.setObjectName("explorerToolButton")
         filesMainWindow.setCentralWidget(self.centralwidget)
+
+        self.explorerToolButton.clicked.connect(src.qtObjects.folder_browse)
 
         self.retranslateUi(filesMainWindow)
         QtCore.QMetaObject.connectSlotsByName(filesMainWindow)
