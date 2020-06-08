@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from bs4 import BeautifulSoup
-import os, re, requests, time, wgetter
+import os, re, requests
 
 import src.paths, src.imagebytes, src.qtObjects
 
@@ -19,7 +19,7 @@ class Ui_softwareMainWindow(object):
                 w.write('\n')
             item = QtGui.QStandardItem(app_link)
             self.model.appendRow(item)
-            src.qtObjects.sucess_message()
+            src.qtObjects.success_message()
         except:
             src.qtObjects.error_message()
 

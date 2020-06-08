@@ -1,5 +1,4 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from distutils.dir_util import copy_tree
 import os
 
 import src.paths, src.imagebytes, src.qtObjects

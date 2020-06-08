@@ -1,9 +1,9 @@
 from PyQt5 import QtWidgets, QtGui
-import os, shutil, webbrowser, zipfile
+import os, shutil, zipfile
 
 import src.paths, src.imagebytes
 
-def sucess_message():
+def success_message():
     successMessageBox = QtWidgets.QMessageBox()
     successMessageBox.setIcon(QtWidgets.QMessageBox.Information)
 
@@ -36,7 +36,7 @@ def folder_browse():
     dest_dir = os.path.join(src.paths.export_files_path,os.path.basename(folder_path))
     try:
         shutil.copytree(folder_path,dest_dir)
-        sucess_message()
+        success_message()
     except:
         error_message()
 
@@ -48,7 +48,7 @@ def file_browse():
     try:
         with zipfile.ZipFile(file_name[0], 'r') as zipObject:
             zipObject.extractall(src.paths.import_path)
-        sucess_message()
+        success_message()
     except:
         error_message()
 
@@ -60,7 +60,7 @@ def image_browse():
     pixmap = QtGui.QPixmap(file_name[0])
     try:
         shutil.copy(file_name[0], src.paths.export_background_path)
-        sucess_message()
+        success_message()
     except:
         error_message()
     return(pixmap)

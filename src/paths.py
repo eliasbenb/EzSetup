@@ -19,5 +19,6 @@ import_app_list_path = import_path+'\\app_list.txt'
 import_background_path = import_path+'\\background.png'
 import_files_path = import_path+'\\Files'
 
-save_path = 'EzSetup Downloads'
+software_save_path = r'EzSetup Software\\'
+files_save_path = r'EzSetup Files\\'
 current_dir = os.getcwd()

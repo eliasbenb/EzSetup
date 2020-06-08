@@ -1,6 +1,5 @@
 from PyQt5.QtWidgets import QMainWindow, QApplication
-from bs4 import BeautifulSoup
-import os, re, requests, shutil, sys, webbrowser, wgetter, zipfile
+import os, shutil, sys, webbrowser, zipfile
 
 from src.home import Ui_homeMainWindow
 from src.software import Ui_softwareMainWindow
@@ -34,24 +33,6 @@ class HomeWindow(QMainWindow):
             for file in files:
                 fn = os.path.join(base, file)
                 zipObject.write(fn, fn[rootlen:])
-    def setup_button(self):
-        if not os.path.exists(src.paths.save_path):
-            os.makedirs(src.paths.save_path)
-
-        with open(src.paths.import_app_list_path, 'r') as r:
-            app_list = r.readlines()
-        app_list = [x.strip() for x in app_list] 
-
-        for app in app_list:
-            link = app + '/download'
-            request = requests.get(link)
-            source = request.content
-            soup = BeautifulSoup(source, 'lxml')
-            app_name = soup.find('h1', class_='name').text
-            download_link_soup = soup.find('a', class_="data download")
-            download_link = download_link_soup.get('href')
-            filename = wgetter.download(download_link, outdir=src.paths.save_path)
-            os.rename(filename,r'EzSetup Downloads\\'+app_name+'.exe')
 
 class softwareWindow(QMainWindow):
     def __init__(self):

@@ -1,8 +1,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from bs4 import BeautifulSoup
-import os
+import ctypes, os, re, requests, shutil, struct, webbrowser, wgetter
 
-import src.paths, src.imagebytes
+import src.paths, src.imagebytes, src.qtObjects
 
 if not os.path.exists(src.paths.base_path):
     os.makedirs(src.paths.base_path)
@@ -20,6 +20,69 @@ if not os.path.exists(src.paths.icon_path):
         wb.write(src.imagebytes.icon_bytes)
 
 class Ui_homeMainWindow(object):
+    def setup_button(self):
+        def software_setup(self):
+            if not os.path.exists(src.paths.software_save_path):
+                os.makedirs(src.paths.software_save_path)
+            with open(src.paths.import_app_list_path, 'r') as r:
+                app_list = r.readlines()
+            app_list = [x.strip() for x in app_list] 
+            for app in app_list:
+                link = app + '/download'
+                request = requests.get(link)
+                source = request.content
+                soup = BeautifulSoup(source, 'lxml')
+                app_name = soup.find('h1', class_='name').text
+                download_link_soup = soup.find('a', class_="data download")
+                download_link = download_link_soup.get('href')
+                filename = wgetter.download(download_link, outdir=src.paths.software_save_path)
+                os.rename(filename,src.paths.software_save_path+app_name+'.exe')
+        def files_setup(self):
+            shutil.copytree(src.paths.import_files_path, src.paths.files_save_path)
+        def background_setup(self):
+            if struct.calcsize('P') * 8 == 64:
+                ctypes.windll.user32.SystemParametersInfoW(20, 0, src.paths.import_background_path, 3)
+            else:
+                ctypes.windll.user32.SystemParametersInfoA(20, 0, src.paths.import_background_path, 3)
+
+        if (self.softwareCheckBox.isChecked() and self.filesCheckBox.isChecked() and self.backgroundCheckBox.isChecked()):
+            try:
+                software_setup(self)
+                webbrowser.open(src.paths.software_save_path)
+                files_setup(self)
+                webbrowser.open(src.paths.files_save_path)
+                background_setup(self)
+                src.qtObjects.success_message()
+            except:
+                src.qtObjects.error_message()
+        elif (self.softwareCheckBox.isChecked() and self.filesCheckBox.isChecked()):
+            try:
+                software_setup(self)
+                webbrowser.open(src.paths.software_save_path)
+                files_setup(self)
+                webbrowser.open(src.paths.files_save_path)
+                src.qtObjects.success_message()
+            except:
+                src.qtObjects.error_message()
+        elif (self.softwareCheckBox.isChecked() and self.backgroundCheckBox.isChecked()):
+            try:
+                software_setup(self)
+                webbrowser.open(src.paths.software_save_path)
+                background_setup(self)
+                src.qtObjects.success_message()
+            except:
+                src.qtObjects.error_message()
+        elif (self.filesCheckBox.isChecked() and self.backgroundCheckBox.isChecked()):
+            try:
+                files_setup(self)
+                webbrowser.open(src.paths.files_save_path)
+                background_setup(self)
+                src.qtObjects.success_message()
+            except:
+                src.qtObjects.error_message()
+        else:
+            src.qtObjects.error_message()
+
     def setupUi(self, homeMainWindow):
         homeMainWindow.setObjectName("homeMainWindow")
         homeMainWindow.setFixedSize(750, 200)
@@ -83,7 +146,7 @@ class Ui_homeMainWindow(object):
         self.backgroundPushButton.clicked.connect(homeMainWindow.background)
         self.importPushButton.clicked.connect(homeMainWindow.import_button)
         self.exportPushButton.clicked.connect(homeMainWindow.export_button)
-        self.setupPushButton.clicked.connect(homeMainWindow.setup_button)
+        self.setupPushButton.clicked.connect(self.setup_button)
 
         self.retranslateUi(homeMainWindow)
         QtCore.QMetaObject.connectSlotsByName(homeMainWindow)
