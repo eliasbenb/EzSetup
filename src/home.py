@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from bs4 import BeautifulSoup
-import os, re, requests, wgetter
+import os
 
 import src.paths, src.imagebytes
 
@@ -10,35 +10,16 @@ if not os.path.exists(src.paths.images_path):
     os.makedirs(src.paths.images_path)
 if not os.path.exists(src.paths.export_path):
     os.makedirs(src.paths.export_path)
-if not os.path.exists(src.paths.files_path):
-    os.makedirs(src.paths.files_path)
-if not os.path.exists(src.paths.app_list_path):
-    with open(src.paths.app_list_path, 'w') as w:
+if not os.path.exists(src.paths.export_files_path):
+    os.makedirs(src.paths.export_files_path)
+if not os.path.exists(src.paths.export_app_list_path):
+    with open(src.paths.export_app_list_path, 'w') as w:
         w.write('')
 if not os.path.exists(src.paths.icon_path):
     with open(src.paths.icon_path, 'wb') as wb:
         wb.write(src.imagebytes.icon_bytes)
 
 class Ui_homeMainWindow(object):
-    def setup_callback(self):
-        if not os.path.exists(src.paths.save_path):
-            os.makedirs(src.paths.save_path)
-
-        with open(src.paths.app_list_path, 'r') as r:
-            app_list = r.readlines()
-        app_list = [x.strip() for x in app_list] 
-
-        for app in app_list:
-            link = app + '/download'
-            request = requests.get(link)
-            source = request.content
-            soup = BeautifulSoup(source, 'lxml')
-            app_name = soup.find('h1', class_='name').text
-            download_link_soup = soup.find('a', class_="data download")
-            download_link = download_link_soup.get('href')
-            filename = wgetter.download(download_link, outdir=src.paths.save_path)
-            os.rename(filename,r'EzSetup Downloads\\'+app_name+'.exe')
-
     def setupUi(self, homeMainWindow):
         homeMainWindow.setObjectName("homeMainWindow")
         homeMainWindow.setFixedSize(750, 200)
@@ -102,7 +83,7 @@ class Ui_homeMainWindow(object):
         self.backgroundPushButton.clicked.connect(homeMainWindow.background)
         self.importPushButton.clicked.connect(homeMainWindow.import_button)
         self.exportPushButton.clicked.connect(homeMainWindow.export_button)
-        self.setupPushButton.clicked.connect(self.setup_callback)
+        self.setupPushButton.clicked.connect(homeMainWindow.setup_button)
 
         self.retranslateUi(homeMainWindow)
         QtCore.QMetaObject.connectSlotsByName(homeMainWindow)

@@ -7,7 +7,7 @@ import src.paths, src.imagebytes, src.qtObjects
 class Ui_filesMainWindow(object):
     def setupUi(self, filesMainWindow):
         filesMainWindow.setObjectName("filesMainWindow")
-        filesMainWindow.setFixedSize(630, 350)
+        filesMainWindow.setFixedSize(630, 320)
         font = QtGui.QFont()
         font.setFamily("Segoe UI")
         font.setPointSize(9)
@@ -17,18 +17,20 @@ class Ui_filesMainWindow(object):
         filesMainWindow.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(filesMainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.fileLineEdit = QtWidgets.QLineEdit(self.centralwidget)
-        self.fileLineEdit.setGeometry(QtCore.QRect(89, 40, 361, 20))
-        self.fileLineEdit.setObjectName("fileLineEdit")
         self.filesListView = QtWidgets.QListView(self.centralwidget)
-        self.filesListView.setGeometry(QtCore.QRect(89, 80, 441, 221))
+        self.filesListView.setGeometry(QtCore.QRect(89, 80, 360, 200))
         self.filesListView.setObjectName("filesListView")
-        self.explorerToolButton = QtWidgets.QToolButton(self.centralwidget)
-        self.explorerToolButton.setGeometry(QtCore.QRect(460, 39, 71, 22))
-        self.explorerToolButton.setObjectName("explorerToolButton")
+        self.pathLineEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.pathLineEdit.setGeometry(QtCore.QRect(90, 40, 360, 20))
+        self.pathLineEdit.setText("")
+        self.pathLineEdit.setReadOnly(True)
+        self.pathLineEdit.setObjectName("pathLineEdit")
+        self.browsePushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.browsePushButton.setGeometry(QtCore.QRect(460, 39, 71, 22))
+        self.browsePushButton.setObjectName("browsePushButton")
         filesMainWindow.setCentralWidget(self.centralwidget)
 
-        self.explorerToolButton.clicked.connect(src.qtObjects.folder_browse)
+        self.browsePushButton.clicked.connect(src.qtObjects.folder_browse)
 
         self.retranslateUi(filesMainWindow)
         QtCore.QMetaObject.connectSlotsByName(filesMainWindow)
@@ -36,5 +38,4 @@ class Ui_filesMainWindow(object):
     def retranslateUi(self, filesMainWindow):
         _translate = QtCore.QCoreApplication.translate
         filesMainWindow.setWindowTitle(_translate("filesMainWindow", "EzSetup"))
-        self.fileLineEdit.setText(_translate("filesMainWindow", "Select file/folder"))
-        self.explorerToolButton.setText(_translate("filesMainWindow", "..."))
+        self.browsePushButton.setText(_translate("filesMainWindow", "Browse"))

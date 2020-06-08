@@ -1,5 +1,5 @@
 from PyQt5 import QtWidgets, QtGui
-import os, shutil
+import os, shutil, webbrowser, zipfile
 
 import src.paths, src.imagebytes
 
@@ -33,9 +33,21 @@ def folder_browse():
     QFileDialog = QtWidgets.QFileDialog()
     current_dir = os.getcwd()
     folder_path = QtWidgets.QFileDialog.getExistingDirectory(parent=QFileDialog, caption="Select a Folder", directory=current_dir)
-    dest_dir = os.path.join(src.paths.files_path,os.path.basename(folder_path))
+    dest_dir = os.path.join(src.paths.export_files_path,os.path.basename(folder_path))
     try:
         shutil.copytree(folder_path,dest_dir)
+        sucess_message()
+    except:
+        error_message()
+
+def file_browse():
+    QFileDialog = QtWidgets.QFileDialog()
+    QFilter = "EzSetup File (*.ez)"
+    current_dir = os.getcwd()
+    file_name = QtWidgets.QFileDialog.getOpenFileName(parent=QFileDialog, caption="Select File", directory=current_dir, filter=QFilter)
+    try:
+        with zipfile.ZipFile(file_name[0], 'r') as zipObject:
+            zipObject.extractall(src.paths.import_path)
         sucess_message()
     except:
         error_message()
@@ -45,8 +57,10 @@ def image_browse():
     QFilter = "Image Files (*.png *.jpg *gif *.bmp)"
     current_dir = os.getcwd()
     file_name = QtWidgets.QFileDialog.getOpenFileName(parent=QFileDialog, caption="Select Background File", directory=current_dir, filter=QFilter)
+    pixmap = QtGui.QPixmap(file_name[0])
     try:
-        shutil.copy(file_name[0], src.paths.background_path)
+        shutil.copy(file_name[0], src.paths.export_background_path)
         sucess_message()
     except:
         error_message()
+    return(pixmap)
