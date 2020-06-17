@@ -22,14 +22,14 @@ class HomeWindow(QMainWindow):
         self.backgroundWindow = backgroundWindow()
         self.backgroundWindow.show()
     def import_button(self):
-        if not os.path.exists(src.paths.import_path):
-            os.makedirs(src.paths.import_path)
+        if not os.path.exists(src.paths.tempImportPath):
+            os.makedirs(src.paths.tempImportPath)
         src.qtObjects.file_browse()
-        webbrowser.open(src.paths.import_path)
+        webbrowser.open(src.paths.tempImportPath)
     def export_button(self):
         zipObject = zipfile.ZipFile(src.paths.current_dir + '\\' + src.paths.current_time + '.ez', 'w', zipfile.ZIP_DEFLATED)
-        rootlen = len(src.paths.export_path) + 1
-        for base, dirs, files in os.walk(src.paths.export_path):
+        rootlen = len(src.paths.tempExportPath) + 1
+        for base, dirs, files in os.walk(src.paths.tempExportPath):
             for file in files:
                 fn = os.path.join(base, file)
                 zipObject.write(fn, fn[rootlen:])
@@ -51,7 +51,7 @@ class backgroundWindow(QMainWindow):
         self.ui.setupUi(self)
 
 def app_exit():
-    shutil.rmtree(src.paths.temp_path, ignore_errors=True)
+    shutil.rmtree(src.paths.tempBasePath, ignore_errors=True)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

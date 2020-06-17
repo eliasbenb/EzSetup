@@ -14,7 +14,7 @@ class Ui_softwareMainWindow(object):
             soup = BeautifulSoup(source, 'lxml')
             app_link = soup.find('a', attrs={'title': re.compile("^download")})
             app_link = app_link.get('href')
-            with open(src.paths.export_app_list_path, 'a+') as w:
+            with open(src.paths.exportSoftwarePath, 'a+') as w:
                 w.write(str(app_link))
                 w.write('\n')
             item = QtGui.QStandardItem(app_link)
@@ -31,7 +31,7 @@ class Ui_softwareMainWindow(object):
         font.setPointSize(9)
         softwareMainWindow.setFont(font)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(src.paths.icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(src.paths.permIconPath), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         softwareMainWindow.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(softwareMainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -53,7 +53,7 @@ class Ui_softwareMainWindow(object):
         self.retranslateUi(softwareMainWindow)
         QtCore.QMetaObject.connectSlotsByName(softwareMainWindow)
 
-        with open(src.paths.export_app_list_path, 'r') as r:
+        with open(src.paths.exportSoftwarePath, 'r') as r:
             for line in r.readlines():
                 item = QtGui.QStandardItem(line)
                 self.model.appendRow(item)
