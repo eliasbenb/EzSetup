@@ -44,3 +44,11 @@ EzSetup is a Python app that uses a PyQt5 GUI. It eases the process of setting u
 - The background will be displayed on the app after selection
 
 ![Background](https://user-images.githubusercontent.com/54410649/84058895-e0e7d880-a9ca-11ea-9394-655270cbff2d.PNG)
+
+# Error Messages:
+- IMP: import module error
+- EXP: export module error
+- FIL: 'Files' section error
+- SOF: 'Software' section error
+- BG: 'Background' section error
+- SYS: system error (normally to do with file management)

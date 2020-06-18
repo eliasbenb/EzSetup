@@ -21,7 +21,7 @@ class Ui_softwareMainWindow(object):
             self.model.appendRow(item)
             src.qtObjects.success_message()
         except:
-            src.qtObjects.error_message()
+            src.qtObjects.error_message("SOFx01")
 
     def setupUi(self, softwareMainWindow):
         softwareMainWindow.setObjectName("softwareMainWindow")

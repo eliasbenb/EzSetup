@@ -1,3 +1,4 @@
+from PyQt5.QtWidgets import QMainWindow, QApplication
 from PyQt5 import QtCore, QtGui, QtWidgets
 import os, shutil
 
@@ -86,7 +87,7 @@ class Ui_backgroundMainWindow(object):
             current_dir = os.getcwd()
             file_name = QtWidgets.QFileDialog.getOpenFileName(parent=QFileDialog, caption="Select Background File", directory=current_dir, filter=QFilter)
         except:
-            src.qtObjects.error_message()
+            src.qtObjects.error_message("BGx01")
         if file_name[0] != '':
             try:
                 pixmap = QtGui.QPixmap(file_name[0])
@@ -98,7 +99,7 @@ class Ui_backgroundMainWindow(object):
                 self.backgroundLabel.show()
                 src.qtObjects.success_message()
             except:
-                src.qtObjects.error_message()
+                src.qtObjects.error_message("BGx02")
             with open(src.paths.exportBackgroundSourcePath, 'w') as w:
                 pass
                 w.write(file_name[0])

@@ -4,31 +4,43 @@ import ctypes, os, re, requests, shutil, struct, webbrowser, wgetter
 
 import src.paths, src.imagebytes, src.qtObjects
 
-if not os.path.exists(src.paths.permBasePath):
-    os.makedirs(src.paths.permBasePath)
-if not os.path.exists(src.paths.permImagesPath):
-    os.makedirs(src.paths.permImagesPath)
-if not os.path.exists(src.paths.tempBasePath):
-    os.makedirs(src.paths.tempBasePath)
-if not os.path.exists(src.paths.tempExportPath):
-    os.makedirs(src.paths.tempExportPath)
-if not os.path.exists(src.paths.tempImportPath):
-    os.makedirs(src.paths.tempImportPath)
-if not os.path.exists(src.paths.exportFilesPath):
-    os.makedirs(src.paths.exportFilesPath)
-if not os.path.exists(src.paths.exportFontsPath):
-    os.makedirs(src.paths.exportFontsPath)
-if not os.path.exists(src.paths.tempExportPath+'\\Background'):
-    os.makedirs(src.paths.tempExportPath+'\\Background')
-if not os.path.exists(src.paths.tempExportPath+'\\Software'):
-    os.makedirs(src.paths.tempExportPath+'\\Software')
-
-if not os.path.exists(src.paths.exportSoftwarePath):
-    with open(src.paths.exportSoftwarePath, 'w') as w:
-        w.write('')
-if not os.path.exists(src.paths.permIconPath):
-    with open(src.paths.permIconPath, 'wb') as wb:
-        wb.write(src.imagebytes.icon_bytes)
+try:
+    if not os.path.exists(src.paths.permBasePath):
+        os.makedirs(src.paths.permBasePath)
+    if not os.path.exists(src.paths.permImagesPath):
+        os.makedirs(src.paths.permImagesPath)
+    if not os.path.exists(src.paths.tempBasePath):
+        os.makedirs(src.paths.tempBasePath)
+    if not os.path.exists(src.paths.tempExportPath):
+        os.makedirs(src.paths.tempExportPath)
+    if not os.path.exists(src.paths.tempImportPath):
+        os.makedirs(src.paths.tempImportPath)
+    if not os.path.exists(src.paths.exportInfoPath):
+        os.makedirs(src.paths.exportInfoPath)
+    if not os.path.exists(src.paths.importInfoPath):
+        os.makedirs(src.paths.importInfoPath)
+    if not os.path.exists(src.paths.exportFilesPath):
+        os.makedirs(src.paths.exportFilesPath)
+    if not os.path.exists(src.paths.exportFontsPath):
+        os.makedirs(src.paths.exportFontsPath)
+    if not os.path.exists(src.paths.tempExportPath+'\\Background'):
+        os.makedirs(src.paths.tempExportPath+'\\Background')
+    if not os.path.exists(src.paths.tempExportPath+'\\Software'):
+        os.makedirs(src.paths.tempExportPath+'\\Software')
+except:
+    src.qtObjects.error_message("SYSx01")
+try:
+    if not os.path.exists(src.paths.exportSoftwarePath):
+        with open(src.paths.exportSoftwarePath, 'w') as w:
+            w.write('')
+    if not os.path.exists(src.paths.permIconPath):
+        with open(src.paths.permIconPath, 'wb') as wb:
+            wb.write(src.imagebytes.icon_bytes)
+    if not os.path.exists(src.paths.exportFilesListPath):
+        with open(src.paths.exportFilesListPath, 'w') as w:
+            w.write('')
+except:
+    src.qtObjects.error_message("SYSx02")
 
 class Ui_homeMainWindow(object):
     def setupUi(self, homeMainWindow):
