@@ -39,32 +39,34 @@ class Ui_filesMainWindow(object):
         if os.path.exists(src.paths.importFilesListPath):
             with open(src.paths.importFilesListPath, 'r') as r:
                 lines = r.readlines()
-            count = 0
-            while len(lines) > count:
-                rowPosition = self.tableWidget.rowCount()
-                self.tableWidget.insertRow(rowPosition)
-                self.tableWidget.setItem(rowPosition , 0, QtWidgets.QTableWidgetItem(str(lines[count])))
-                self.tableWidget.resizeColumnToContents(0)
-                count = count + 1
-                self.tableWidget.setItem(rowPosition , 1, QtWidgets.QTableWidgetItem(str(lines[count])))
-                self.tableWidget.resizeColumnToContents(1)
-                count = count + 1
-        elif os.path.exists(src.paths.exportFilesListPath):
-            with open(src.paths.exportFilesListPath, 'r') as r:
-                lines = r.readlines()
-            count = 0
-            while len(lines) > count:
-                rowPosition = self.tableWidget.rowCount()
-                self.tableWidget.insertRow(rowPosition)
-                self.tableWidget.setItem(rowPosition , 0, QtWidgets.QTableWidgetItem(str(lines[count])))
-                self.tableWidget.resizeColumnToContents(0)
-                count = count + 1
-                try:
+            if len(lines) > 0:
+                count = 0
+                while len(lines) > count:
+                    rowPosition = self.tableWidget.rowCount()
+                    self.tableWidget.insertRow(rowPosition)
+                    self.tableWidget.setItem(rowPosition , 0, QtWidgets.QTableWidgetItem(str(lines[count])))
+                    self.tableWidget.resizeColumnToContents(0)
+                    count = count + 1
                     self.tableWidget.setItem(rowPosition , 1, QtWidgets.QTableWidgetItem(str(lines[count])))
                     self.tableWidget.resizeColumnToContents(1)
                     count = count + 1
-                except:
-                    pass
+        elif os.path.exists(src.paths.exportFilesListPath):
+            with open(src.paths.exportFilesListPath, 'r') as r:
+                lines = r.readlines()
+            if len(lines) > 0:
+                count = 0
+                while len(lines) > count:
+                    rowPosition = self.tableWidget.rowCount()
+                    self.tableWidget.insertRow(rowPosition)
+                    self.tableWidget.setItem(rowPosition , 0, QtWidgets.QTableWidgetItem(str(lines[count])))
+                    self.tableWidget.resizeColumnToContents(0)
+                    count = count + 1
+                    try:
+                        self.tableWidget.setItem(rowPosition , 1, QtWidgets.QTableWidgetItem(str(lines[count])))
+                        self.tableWidget.resizeColumnToContents(1)
+                        count = count + 1
+                    except:
+                        pass
         
         self.retranslateUi(filesMainWindow)
         QtCore.QMetaObject.connectSlotsByName(filesMainWindow)

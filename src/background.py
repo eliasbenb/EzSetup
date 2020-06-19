@@ -1,4 +1,3 @@
-from PyQt5.QtWidgets import QMainWindow, QApplication
 from PyQt5 import QtCore, QtGui, QtWidgets
 import os, shutil
 
@@ -101,6 +100,5 @@ class Ui_backgroundMainWindow(object):
             except:
                 src.qtObjects.error_message("BGx02")
             with open(src.paths.exportBackgroundSourcePath, 'w') as w:
-                pass
                 w.write(file_name[0])
             self.pathLineEdit.setText(file_name[0])

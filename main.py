@@ -1,11 +1,11 @@
 from PyQt5.QtWidgets import QMainWindow, QApplication
-from PyQt5 import QtCore, QtGui, QtWidgets
-import os, shutil, sys, webbrowser, zipfile
+import os, shutil, sys
 
 from src.home import Ui_homeMainWindow
-from src.software import Ui_softwareMainWindow
-from src.files import Ui_filesMainWindow
 from src.background import Ui_backgroundMainWindow
+from src.files import Ui_filesMainWindow
+from src.fonts import Ui_fontsMainWindow
+from src.software import Ui_softwareMainWindow
 import src.paths, src.imagebytes, src.qtObjects
 
 class HomeWindow(QMainWindow):
@@ -13,60 +13,38 @@ class HomeWindow(QMainWindow):
         super().__init__()
         self.ui = Ui_homeMainWindow()
         self.ui.setupUi(self)
-    def software(self):
-        self.softwareWindow = softwareWindow()
-        self.softwareWindow.show()
-    def files(self):
-        self.filesWindow = filesWindow()
-        self.filesWindow.show()
     def background(self):
         self.backgroundWindow = backgroundWindow()
         self.backgroundWindow.show()
-    def import_button(self):
-        if not os.path.exists(src.paths.tempImportPath):
-            os.makedirs(src.paths.tempImportPath)
-        try:
-            QFileDialog = QtWidgets.QFileDialog()
-            QFilter = "EzSetup File (*.ez)"
-            current_dir = os.getcwd()
-            file_name = QtWidgets.QFileDialog.getOpenFileName(parent=QFileDialog, caption="Select File", directory=current_dir, filter=QFilter)
-        except:
-            src.qtObjects.error_message("IMPx01")
-        if file_name[0] != '':
-            try:
-                with zipfile.ZipFile(file_name[0], 'r') as zipObject:
-                    zipObject.extractall(src.paths.tempImportPath)
-                src.qtObjects.success_message()
-                webbrowser.open(src.paths.tempImportPath)
-            except:
-                src.qtObjects.error_message("IMPx02")
-    def export_button(self):
-        zipObject = zipfile.ZipFile(src.paths.current_dir + '\\' + src.paths.current_time + '.ez', 'w', zipfile.ZIP_DEFLATED)
-        rootlen = len(src.paths.tempExportPath) + 1
-        try:
-            for base, dirs, files in os.walk(src.paths.tempExportPath):
-                for file in files:
-                    fn = os.path.join(base, file)
-                    zipObject.write(fn, fn[rootlen:])
-            src.qtObjects.success_message()
-            webbrowser.open(src.paths.tempImportPath)
-        except:
-            src.qtObjects.error_message("EXPx01")
+    def files(self):
+        self.filesWindow = filesWindow()
+        self.filesWindow.show()
+    def fonts(self):
+        self.fontsWindow = fontsWindow()
+        self.fontsWindow.show()
+    def software(self):
+        self.softwareWindow = softwareWindow()
+        self.softwareWindow.show()
 
-class softwareWindow(QMainWindow):
+class backgroundWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.ui = Ui_softwareMainWindow()
+        self.ui = Ui_backgroundMainWindow()
         self.ui.setupUi(self)
 class filesWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.ui = Ui_filesMainWindow()
         self.ui.setupUi(self)
-class backgroundWindow(QMainWindow):
+class fontsWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.ui = Ui_backgroundMainWindow()
+        self.ui = Ui_fontsMainWindow()
+        self.ui.setupUi(self)
+class softwareWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.ui = Ui_softwareMainWindow()
         self.ui.setupUi(self)
 
 def app_exit():

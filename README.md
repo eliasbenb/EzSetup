@@ -49,6 +49,7 @@ EzSetup is a Python app that uses a PyQt5 GUI. It eases the process of setting u
 - IMP: import module error
 - EXP: export module error
 - FIL: 'Files' section error
+- FNT: 'Fonts' section error
 - SOF: 'Software' section error
 - BG: 'Background' section error
 - SYS: system error (normally to do with file management)

@@ -1,6 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from bs4 import BeautifulSoup
-import ctypes, os, re, requests, shutil, struct, webbrowser, wgetter
+from ctypes import wintypes
+import ctypes, os, requests, shutil, struct, webbrowser, wgetter, zipfile
 
 import src.paths, src.imagebytes, src.qtObjects
 
@@ -17,30 +18,36 @@ try:
         os.makedirs(src.paths.tempImportPath)
     if not os.path.exists(src.paths.exportInfoPath):
         os.makedirs(src.paths.exportInfoPath)
-    if not os.path.exists(src.paths.importInfoPath):
-        os.makedirs(src.paths.importInfoPath)
+    if not os.path.exists(src.paths.tempExportPath+'\\Background'):
+        os.makedirs(src.paths.tempExportPath+'\\Background')
     if not os.path.exists(src.paths.exportFilesPath):
         os.makedirs(src.paths.exportFilesPath)
     if not os.path.exists(src.paths.exportFontsPath):
         os.makedirs(src.paths.exportFontsPath)
-    if not os.path.exists(src.paths.tempExportPath+'\\Background'):
-        os.makedirs(src.paths.tempExportPath+'\\Background')
-    if not os.path.exists(src.paths.tempExportPath+'\\Software'):
-        os.makedirs(src.paths.tempExportPath+'\\Software')
 except:
     src.qtObjects.error_message("SYSx01")
 try:
-    if not os.path.exists(src.paths.exportSoftwarePath):
-        with open(src.paths.exportSoftwarePath, 'w') as w:
-            w.write('')
     if not os.path.exists(src.paths.permIconPath):
         with open(src.paths.permIconPath, 'wb') as wb:
             wb.write(src.imagebytes.icon_bytes)
+    if not os.path.exists(src.paths.exportBackgroundSourcePath):
+        with open(src.paths.exportBackgroundSourcePath, 'w') as w:
+            w.write('')
     if not os.path.exists(src.paths.exportFilesListPath):
         with open(src.paths.exportFilesListPath, 'w') as w:
             w.write('')
+    if not os.path.exists(src.paths.exportFontsListPath):
+        with open(src.paths.exportFontsListPath, 'w') as w:
+            w.write('')
+    if not os.path.exists(src.paths.exportSoftwareListPath):
+        with open(src.paths.exportSoftwareListPath, 'w') as w:
+            w.write('')
+    if not os.path.exists(src.paths.exportSoftwareLinksPath):
+        with open(src.paths.exportSoftwareLinksPath, 'w') as w:
+            w.write('')
 except:
     src.qtObjects.error_message("SYSx02")
+
 
 class Ui_homeMainWindow(object):
     def setupUi(self, homeMainWindow):
@@ -107,21 +114,34 @@ class Ui_homeMainWindow(object):
         self.exportAction.setObjectName("exportAction")
         self.github_repositryAction = QtWidgets.QAction(homeMainWindow)
         self.github_repositryAction.setObjectName("github_repositryAction")
+        self.export_folderAction = QtWidgets.QAction(homeMainWindow)
+        self.export_folderAction.setObjectName("export_folderAction")
+        self.import_folderAction = QtWidgets.QAction(homeMainWindow)
+        self.import_folderAction.setObjectName("import_folderAction")
         self.fileMenu.addAction(self.importAction)
         self.fileMenu.addAction(self.exportAction)
+        self.fileMenu.addSeparator()
+        self.fileMenu.addAction(self.import_folderAction)
+        self.fileMenu.addAction(self.export_folderAction)
         self.helpMenu.addAction(self.github_repositryAction)
         self.MenuBar.addAction(self.fileMenu.menuAction())
         self.MenuBar.addAction(self.helpMenu.menuAction())
 
+
         self.softwarePushButton.clicked.connect(homeMainWindow.software)
         self.filesPushButton.clicked.connect(homeMainWindow.files)
+        self.fontsPushButton.clicked.connect(homeMainWindow.fonts)
         self.backgroundPushButton.clicked.connect(homeMainWindow.background)
         self.setupPushButton.clicked.connect(self.setup_button)
-        self.importAction.triggered.connect(homeMainWindow.import_button)
-        self.exportAction.triggered.connect(homeMainWindow.export_button)
+        self.importAction.triggered.connect(self.import_button)
+        self.exportAction.triggered.connect(self.export_button)
+        self.import_folderAction.triggered.connect(self.import_folder)
+        self.export_folderAction.triggered.connect(self.export_folder)
+
 
         self.retranslateUi(homeMainWindow)
         QtCore.QMetaObject.connectSlotsByName(homeMainWindow)
+
 
     def retranslateUi(self, homeMainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -136,28 +156,113 @@ class Ui_homeMainWindow(object):
         self.importAction.setText(_translate("homeMainWindow", "Import"))
         self.exportAction.setText(_translate("homeMainWindow", "Export"))
         self.github_repositryAction.setText(_translate("homeMainWindow", "GitHub Repositry"))
+        self.export_folderAction.setText(_translate("homeMainWindow", "Export Folder"))
+        self.import_folderAction.setText(_translate("homeMainWindow", "Import Folder"))
+
 
     def setup_button(self):
-        def software_setup(self):
-            if not os.path.exists(src.paths.software_save_path):
-                os.makedirs(src.paths.software_save_path)
-            with open(src.paths.importSoftwarePath, 'r') as r:
-                app_list = r.readlines()
-            app_list = [x.strip() for x in app_list] 
-            for app in app_list:
-                link = app + '/download'
-                request = requests.get(link)
-                source = request.content
-                soup = BeautifulSoup(source, 'lxml')
-                app_name = soup.find('h1', class_='name').text
-                download_link_soup = soup.find('a', class_="data download")
-                download_link = download_link_soup.get('href')
-                filename = wgetter.download(download_link, outdir=src.paths.software_save_path)
-                os.rename(filename,src.paths.software_save_path+app_name+'.exe')
-        def files_setup(self):
-            shutil.copytree(src.paths.importFilesPath, src.paths.files_save_path)
-        def background_setup(self):
-            if struct.calcsize('P') * 8 == 64:
-                ctypes.windll.user32.SystemParametersInfoW(20, 0, src.paths.importBackgroundPath, 3)
-            else:
-                ctypes.windll.user32.SystemParametersInfoA(20, 0, src.paths.importBackgroundPath, 3)
+        ########## Background ##########
+        if struct.calcsize('P') * 8 == 64:
+            ctypes.windll.user32.SystemParametersInfoW(20, 0, src.paths.importBackgroundPath, 3)
+        else:
+            ctypes.windll.user32.SystemParametersInfoA(20, 0, src.paths.importBackgroundPath, 3)
+        
+        ########## Files ##########
+        shutil.copytree(src.paths.importFilesPath, src.paths.files_save_path)
+
+        ########## Fonts ##########
+        from ctypes import wintypes
+        try:
+            import winreg
+        except ImportError:
+            import _winreg as winreg
+        user32 = ctypes.WinDLL('user32', use_last_error=True)
+        gdi32 = ctypes.WinDLL('gdi32', use_last_error=True)
+        FONTS_REG_PATH = r'Software\Microsoft\Windows NT\CurrentVersion\Fonts'
+        HWND_BROADCAST   = 0xFFFF
+        SMTO_ABORTIFHUNG = 0x0002
+        WM_FONTCHANGE    = 0x001D
+        GFRI_DESCRIPTION = 1
+        GFRI_ISTRUETYPE  = 3
+        if not hasattr(wintypes, 'LPDWORD'):
+            wintypes.LPDWORD = ctypes.POINTER(wintypes.DWORD)
+        user32.SendMessageTimeoutW.restype = wintypes.LPVOID
+        user32.SendMessageTimeoutW.argtypes = (wintypes.HWND, wintypes.UINT, wintypes.LPVOID, wintypes.LPVOID, wintypes.UINT, wintypes.UINT, wintypes.LPVOID)
+        gdi32.AddFontResourceW.argtypes = (wintypes.LPCWSTR,)
+        gdi32.GetFontResourceInfoW.argtypes = (wintypes.LPCWSTR, wintypes.LPDWORD, wintypes.LPVOID, wintypes.DWORD)
+        for file_ in os.listdir(src.paths.importFontsPath):
+            if file_.endswith('.ttf') or file_.endswith('.otf'):
+                src_path = os.path.join(src.paths.importFontsPath, file_)
+                dst_path = os.path.join(os.environ['SystemRoot'], 'Fonts', os.path.basename(src_path))
+                shutil.copy(src_path, dst_path)
+                if not gdi32.AddFontResourceW(dst_path):
+                    os.remove(dst_path)
+                    raise WindowsError('AddFontResource failed to load "%s"' % src_path)
+                user32.SendMessageTimeoutW(HWND_BROADCAST, WM_FONTCHANGE, 0, 0, SMTO_ABORTIFHUNG, 1000, None)
+                filename = os.path.basename(dst_path)
+                fontname = os.path.splitext(filename)[0]
+                cb = wintypes.DWORD()
+                if gdi32.GetFontResourceInfoW(filename, ctypes.byref(cb), None, GFRI_DESCRIPTION):
+                    buf = (ctypes.c_wchar * cb.value)()
+                    if gdi32.GetFontResourceInfoW(filename, ctypes.byref(cb), buf, GFRI_DESCRIPTION):
+                        fontname = buf.value
+                is_truetype = wintypes.BOOL()
+                cb.value = ctypes.sizeof(is_truetype)
+                gdi32.GetFontResourceInfoW(filename, ctypes.byref(cb), ctypes.byref(is_truetype), GFRI_ISTRUETYPE)
+                if is_truetype:
+                    fontname += ' (TrueType)'
+                with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, FONTS_REG_PATH, 0, winreg.KEY_SET_VALUE) as key:
+                    winreg.SetValueEx(key, fontname, 0, winreg.REG_SZ, filename)
+
+        ########## Software ##########
+        if not os.path.exists(src.paths.software_save_path):
+            os.makedirs(src.paths.software_save_path)
+        with open(src.paths.importSoftwareLinksPath, 'r') as r:
+            software_list = r.readlines()
+        software_list = [x.strip() for x in software_list] 
+        for software in software_list:
+            link = software + 'post_download'
+            request = requests.get(link)
+            source = request.text
+            soup = BeautifulSoup(source, 'html.parser')
+            download_link = soup.find('script', type='text/javascript', attrs={'data-qa-download-url':True})
+            download_link = download_link.get('data-qa-download-url')
+            filename = wgetter.download(download_link, outdir=src.paths.software_save_path)
+
+
+    def import_button(self):
+        if not os.path.exists(src.paths.tempImportPath):
+            os.makedirs(src.paths.tempImportPath)
+        try:
+            QFileDialog = QtWidgets.QFileDialog()
+            QFilter = "EzSetup File (*.ez)"
+            current_dir = os.getcwd()
+            file_name = QtWidgets.QFileDialog.getOpenFileName(parent=QFileDialog, caption="Select File", directory=current_dir, filter=QFilter)
+        except:
+            src.qtObjects.error_message("IMPx01")
+        if file_name[0] != '':
+            try:
+                with zipfile.ZipFile(file_name[0], 'r') as zipObject:
+                    zipObject.extractall(src.paths.tempImportPath)
+                src.qtObjects.success_message()
+                webbrowser.open(src.paths.tempImportPath)
+            except:
+                src.qtObjects.error_message("IMPx02")
+
+
+    def export_button(self):
+        zipObject = zipfile.ZipFile(src.paths.current_dir + '\\' + src.paths.current_time + '.ez', 'w', zipfile.ZIP_DEFLATED)
+        rootlen = len(src.paths.tempExportPath) + 1
+        try:
+            for base, dirs, files in os.walk(src.paths.tempExportPath):
+                for file in files:
+                    fn = os.path.join(base, file)
+                    zipObject.write(fn, fn[rootlen:])
+            src.qtObjects.success_message()
+            webbrowser.open(src.paths.current_dir)
+        except:
+            src.qtObjects.error_message("EXPx01")
+    def import_folder(self):
+        webbrowser.open(src.paths.tempImportPath)
+    def export_folder(self):
+        webbrowser.open(src.paths.tempExportPath)

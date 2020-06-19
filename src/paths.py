@@ -1,5 +1,5 @@
-import os, re
 from time import gmtime, strftime
+import os
 
 current_time = strftime("%Y%m%d%H%M%S", gmtime())
 
@@ -15,22 +15,28 @@ tempImportPath = '%s\\eliasbenb\\EzSetup\\Import\\%s' %  (os.environ['TEMP'], cu
 
 exportInfoPath = tempExportPath+'\\Info'
 exportBackgroundPath = tempExportPath+'\\Background\\background.png'
-exportBackgroundSourcePath = exportInfoPath+'background_source.txt'
+exportBackgroundSourcePath = exportInfoPath+'\\background_source.txt'
 exportFilesPath = tempExportPath+'\\Files'
-exportFilesListPath = exportInfoPath+'files_list.txt'
+exportFilesListPath = exportInfoPath+'\\files_list.txt'
 exportFontsPath = tempExportPath+'\\Fonts'
-exportSoftwarePath = exportInfoPath+'\\software_list.txt'
+exportFontsListPath = exportInfoPath+'\\fonts_list.txt'
+exportSoftwareListPath = exportInfoPath+'\\software_list.txt'
+exportSoftwareLinksPath = exportInfoPath+'\\software_links.txt'
 
 
 importInfoPath = tempImportPath+'\\Info'
 importBackgroundPath = tempImportPath+'\\Background\\background.png'
-importBackgroundSourcePath = importInfoPath+'background_source.txt'
+importBackgroundSourcePath = importInfoPath+'\\background_source.txt'
 importFilesPath = tempImportPath+'\\Files'
 importFilesListPath = importInfoPath+'\\files_list.txt'
 importFontsPath = tempImportPath+'\\Fonts'
-importSoftwarePath = importInfoPath+'\\software_list.txt'
+importFontsListPath = importInfoPath+'\\fonts_list.txt'
+importSoftwareListPath = importInfoPath+'\\software_list.txt'
+importSoftwareLinksPath = importInfoPath+'\\software_links.txt'
 
 
-software_save_path = r'EzSetup Software\\'
-files_save_path = r'EzSetup Files\\'
+fontsInstallDir = '%s\\Fonts' % (os.environ['WINDIR'])
+
 current_dir = os.getcwd()
+software_save_path = current_dir+'\\EzSetup Software'
+files_save_path = current_dir+'\\EzSetup Files'

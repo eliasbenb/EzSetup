@@ -1,5 +1,4 @@
 from PyQt5 import QtWidgets, QtGui
-import os, shutil, zipfile
 
 import src.paths, src.imagebytes
 
