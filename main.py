@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QMainWindow, QApplication
-import os, shutil, sys
+import ctypes, os, shutil, sys
 
 from src.home import Ui_homeMainWindow
 from src.background import Ui_backgroundMainWindow
@@ -7,6 +7,16 @@ from src.files import Ui_filesMainWindow
 from src.fonts import Ui_fontsMainWindow
 from src.software import Ui_softwareMainWindow
 import src.paths, src.imagebytes, src.qtObjects
+
+def is_admin():
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except:
+        return False
+if is_admin():
+    pass
+else:
+    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
 
 class HomeWindow(QMainWindow):
     def __init__(self):
