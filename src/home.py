@@ -162,72 +162,82 @@ class Ui_homeMainWindow(object):
 
     def setup_button(self):
         ########## Background ##########
-        if struct.calcsize('P') * 8 == 64:
-            ctypes.windll.user32.SystemParametersInfoW(20, 0, src.paths.importBackgroundPath, 3)
-        else:
-            ctypes.windll.user32.SystemParametersInfoA(20, 0, src.paths.importBackgroundPath, 3)
+        try:
+            if struct.calcsize('P') * 8 == 64:
+                ctypes.windll.user32.SystemParametersInfoW(20, 0, src.paths.importBackgroundPath, 3)
+            else:
+                ctypes.windll.user32.SystemParametersInfoA(20, 0, src.paths.importBackgroundPath, 3)
+        except:
+            src.qtObjects.error_message("BGx03")
         
         ########## Files ##########
         shutil.copytree(src.paths.importFilesPath, src.paths.files_save_path)
 
         ########## Fonts ##########
-        from ctypes import wintypes
         try:
-            import winreg
-        except ImportError:
-            import _winreg as winreg
-        user32 = ctypes.WinDLL('user32', use_last_error=True)
-        gdi32 = ctypes.WinDLL('gdi32', use_last_error=True)
-        FONTS_REG_PATH = r'Software\Microsoft\Windows NT\CurrentVersion\Fonts'
-        HWND_BROADCAST   = 0xFFFF
-        SMTO_ABORTIFHUNG = 0x0002
-        WM_FONTCHANGE    = 0x001D
-        GFRI_DESCRIPTION = 1
-        GFRI_ISTRUETYPE  = 3
-        if not hasattr(wintypes, 'LPDWORD'):
-            wintypes.LPDWORD = ctypes.POINTER(wintypes.DWORD)
-        user32.SendMessageTimeoutW.restype = wintypes.LPVOID
-        user32.SendMessageTimeoutW.argtypes = (wintypes.HWND, wintypes.UINT, wintypes.LPVOID, wintypes.LPVOID, wintypes.UINT, wintypes.UINT, wintypes.LPVOID)
-        gdi32.AddFontResourceW.argtypes = (wintypes.LPCWSTR,)
-        gdi32.GetFontResourceInfoW.argtypes = (wintypes.LPCWSTR, wintypes.LPDWORD, wintypes.LPVOID, wintypes.DWORD)
-        for file_ in os.listdir(src.paths.importFontsPath):
-            if file_.endswith('.ttf') or file_.endswith('.otf'):
-                src_path = os.path.join(src.paths.importFontsPath, file_)
-                dst_path = os.path.join(os.environ['SystemRoot'], 'Fonts', os.path.basename(src_path))
-                shutil.copy(src_path, dst_path)
-                if not gdi32.AddFontResourceW(dst_path):
-                    os.remove(dst_path)
-                    raise WindowsError('AddFontResource failed to load "%s"' % src_path)
-                user32.SendMessageTimeoutW(HWND_BROADCAST, WM_FONTCHANGE, 0, 0, SMTO_ABORTIFHUNG, 1000, None)
-                filename = os.path.basename(dst_path)
-                fontname = os.path.splitext(filename)[0]
-                cb = wintypes.DWORD()
-                if gdi32.GetFontResourceInfoW(filename, ctypes.byref(cb), None, GFRI_DESCRIPTION):
-                    buf = (ctypes.c_wchar * cb.value)()
-                    if gdi32.GetFontResourceInfoW(filename, ctypes.byref(cb), buf, GFRI_DESCRIPTION):
-                        fontname = buf.value
-                is_truetype = wintypes.BOOL()
-                cb.value = ctypes.sizeof(is_truetype)
-                gdi32.GetFontResourceInfoW(filename, ctypes.byref(cb), ctypes.byref(is_truetype), GFRI_ISTRUETYPE)
-                if is_truetype:
-                    fontname += ' (TrueType)'
-                with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, FONTS_REG_PATH, 0, winreg.KEY_SET_VALUE) as key:
-                    winreg.SetValueEx(key, fontname, 0, winreg.REG_SZ, filename)
+            from ctypes import wintypes
+            try:
+                import winreg
+            except ImportError:
+                import _winreg as winreg
+            user32 = ctypes.WinDLL('user32', use_last_error=True)
+            gdi32 = ctypes.WinDLL('gdi32', use_last_error=True)
+            FONTS_REG_PATH = r'Software\Microsoft\Windows NT\CurrentVersion\Fonts'
+            HWND_BROADCAST   = 0xFFFF
+            SMTO_ABORTIFHUNG = 0x0002
+            WM_FONTCHANGE    = 0x001D
+            GFRI_DESCRIPTION = 1
+            GFRI_ISTRUETYPE  = 3
+            if not hasattr(wintypes, 'LPDWORD'):
+                wintypes.LPDWORD = ctypes.POINTER(wintypes.DWORD)
+            user32.SendMessageTimeoutW.restype = wintypes.LPVOID
+            user32.SendMessageTimeoutW.argtypes = (wintypes.HWND, wintypes.UINT, wintypes.LPVOID, wintypes.LPVOID, wintypes.UINT, wintypes.UINT, wintypes.LPVOID)
+            gdi32.AddFontResourceW.argtypes = (wintypes.LPCWSTR,)
+            gdi32.GetFontResourceInfoW.argtypes = (wintypes.LPCWSTR, wintypes.LPDWORD, wintypes.LPVOID, wintypes.DWORD)
+            for file_ in os.listdir(src.paths.importFontsPath):
+                if file_.endswith('.ttf') or file_.endswith('.otf'):
+                    src_path = os.path.join(src.paths.importFontsPath, file_)
+                    dst_path = os.path.join(os.environ['SystemRoot'], 'Fonts', os.path.basename(src_path))
+                    shutil.copy(src_path, dst_path)
+                    if not gdi32.AddFontResourceW(dst_path):
+                        os.remove(dst_path)
+                        raise WindowsError('AddFontResource failed to load "%s"' % src_path)
+                    user32.SendMessageTimeoutW(HWND_BROADCAST, WM_FONTCHANGE, 0, 0, SMTO_ABORTIFHUNG, 1000, None)
+                    filename = os.path.basename(dst_path)
+                    fontname = os.path.splitext(filename)[0]
+                    cb = wintypes.DWORD()
+                    if gdi32.GetFontResourceInfoW(filename, ctypes.byref(cb), None, GFRI_DESCRIPTION):
+                        buf = (ctypes.c_wchar * cb.value)()
+                        if gdi32.GetFontResourceInfoW(filename, ctypes.byref(cb), buf, GFRI_DESCRIPTION):
+                            fontname = buf.value
+                    is_truetype = wintypes.BOOL()
+                    cb.value = ctypes.sizeof(is_truetype)
+                    gdi32.GetFontResourceInfoW(filename, ctypes.byref(cb), ctypes.byref(is_truetype), GFRI_ISTRUETYPE)
+                    if is_truetype:
+                        fontname += ' (TrueType)'
+                    with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, FONTS_REG_PATH, 0, winreg.KEY_SET_VALUE) as key:
+                        winreg.SetValueEx(key, fontname, 0, winreg.REG_SZ, filename)
+        except:
+            src.qtObjects.error_message("FNTx05")
 
         ########## Software ##########
-        if not os.path.exists(src.paths.software_save_path):
-            os.makedirs(src.paths.software_save_path)
-        with open(src.paths.importSoftwareLinksPath, 'r') as r:
-            software_list = r.readlines()
-        software_list = [x.strip() for x in software_list] 
-        for software in software_list:
-            link = software + 'post_download'
-            request = requests.get(link)
-            source = request.text
-            soup = BeautifulSoup(source, 'html.parser')
-            download_link = soup.find('script', type='text/javascript', attrs={'data-qa-download-url':True})
-            download_link = download_link.get('data-qa-download-url')
-            filename = wgetter.download(download_link, outdir=src.paths.software_save_path)
+        try:
+            if not os.path.exists(src.paths.software_save_path):
+                os.makedirs(src.paths.software_save_path)
+            with open(src.paths.importSoftwareLinksPath, 'r') as r:
+                software_list = r.readlines()
+            software_list = [x.strip() for x in software_list] 
+            for software in software_list:
+                link = software + 'post_download'
+                request = requests.get(link)
+                source = request.text
+                soup = BeautifulSoup(source, 'html.parser')
+                download_link = soup.find('script', type='text/javascript', attrs={'data-qa-download-url':True})
+                download_link = download_link.get('data-qa-download-url')
+                filename = wgetter.download(download_link, outdir=src.paths.software_save_path)
+        except:
+            src.qtObjects.error_message("SOFx02")
+        src.qtObjects.success_message()
 
 
     def import_button(self):
