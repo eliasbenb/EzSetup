@@ -1,11 +1,11 @@
-<a href="#"><h3 align="center"><img src="https://i.ibb.co/ZWtwXrg/Ez-Setup-Header.png" width="600px"></h3></a>
+<a href="#"><h3 align="center"><img src="https://i.ibb.co/d4Cwn2y/Ez-Setup-Header.png" width="600px"></h3></a>
 <p align="center">
   <a href="https://github.com/eliasbenb/EzSetup/releases"><img src="https://img.shields.io/github/downloads/eliasbenb/EzSetup/total?color=ff0000&style=for-the-badge"></a>
   <a href="https://github.com/eliasbenb/EzSetup/releases/latest"><img src="https://img.shields.io/github/v/release/eliasbenb/EzSetup?color=ff0000&style=for-the-badge"></a>
 </p>
 <p align="center">
   <a href="https://eliasbenb.github.io"><img
-src="https://i.ibb.co/RDg0dkV/Produced-By-eliasbenb-Red.png" width="180"></a>
+src="https://i.ibb.co/cJxC34d/Ez-Setup-prod.png" width="180"></a>
 </p>
 
 # What is this repo?
